@@ -1,0 +1,68 @@
+deployments:
+  database:
+    replicaCount: 1
+    pod:
+      name: db-pod
+      container:
+        name: db-container
+        image:
+          repository: mongo
+          tag: "5.0"
+        ports:
+          containerPort: 27017
+        volumeMounts:
+          mountPath: /data/db
+        env:
+          username: MONGO_INITDB_ROOT_USERNAME
+          password: MONGO_INITDB_ROOT_PASSWORD
+    volume:
+      name: mongo-db-volume
+
+  web:
+    replicaCount: 1
+    pod:
+      name: web-pod
+      container:
+        name: web-container
+        image:
+          repository: mongo-express
+          tag: latest
+        ports:
+          containerPort: 8081
+        env:
+          server: ME_CONFIG_MONGODB_SERVER
+          username: ME_CONFIG_MONGODB_ADMINUSERNAME
+          password: ME_CONFIG_MONGODB_ADMINPASSWORD
+
+service:
+  db:
+    type: ClusterIP
+    ports:
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+  
+  web:
+    type: NodePort
+    ports:
+      protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 30111
+
+secret:
+  type: Opaque
+  username: user101
+  password: pass101
+
+persistentVolume:
+  accessModes: ReadWriteMany
+  storage: 0.5Gi
+  localPath: /storage/mongo
+  host:
+    name: minikube
+
+persistentVolumeClaim:
+  accessModes: ReadWriteMany
+  resourceRequest: 300Mi
+  storageClassName: ""
