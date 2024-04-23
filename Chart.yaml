@@ -1,0 +1,18 @@
+apiVersion: v2
+name: mondodb-admin-interface
+version: 0.1.0
+description: A Helm chart for MongoDB Admin Interface
+type: application
+keywords:
+  - mongodb
+  - database
+  - mongo-express
+home: The URL of this projects home page (optional)
+sources:
+  - https://github.com/mathesh-me/helm-mongo-admin
+maintainers:
+  - name: Mathesh M
+    email: itzmathesh@gmail.com
+    url: 
+icon: https://hub.docker.com/api/media/repos_logo/v1/library%2Fmongo-express
+appVersion: 1.0.2
