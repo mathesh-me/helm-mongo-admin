@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-db-depl
+  labels:
+    {{- include "db-labels" . | indent 2 }}
+spec:
+  replicas: {{ .Values.deployments.database.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "db-labels" . | indent 4 }}
+  template:
+    metadata:
+      name: {{ .Values.deployments.database.pod.name }}
+      labels:
+        {{- include "db-labels" . | indent 6 }}
+    spec:
+      containers:
+      - name: {{ .Values.deployments.database.pod.container.name }}
+        image: {{ .Values.deployments.database.pod.container.image.repository }}:{{ .Values.deployments.database.pod.container.image.tag }}
+        ports:
+        - containerPort: {{ .Values.deployments.database.pod.container.ports.containerPort }}
+        volumeMounts:
+        - mountPath: {{ .Values.deployments.database.pod.container.volumeMounts.mountPath }}
+          name: {{ .Values.deployments.database.volume.name }}
+        env:
+        - name: {{ .Values.deployments.database.pod.container.env.username }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-secrets
+              key: username
+        - name: {{ .Values.deployments.database.pod.container.env.password }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-secrets
+              key: password
+      volumes:
+      - name: {{ .Values.deployments.database.volume.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-db-pvc

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-web-depl
+  labels:
+    {{- include "web-labels" . | indent 2 }}
+spec:
+  replicas: {{ .Values.deployments.web.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "web-labels" . | indent 4 }}
+  template:
+    metadata:
+      name: {{ .Values.deployments.web.pod.name }}
+      labels:
+        {{- include "web-labels" . | indent 6 }}
+    spec:
+      containers:
+      - name: {{ .Values.deployments.web.pod.container.name }}
+        image: {{ .Values.deployments.web.pod.container.image.repository }}:{{ .Values.deployments.web.pod.container.image.tag }}
+        ports:
+        - containerPort: {{ .Values.deployments.web.pod.container.ports.containerPort }}
+        env:
+          - name: {{ .Values.deployments.web.pod.container.env.username }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-db-secrets
+                key: username
+          - name: {{ .Values.deployments.web.pod.container.env.password }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-db-secrets
+                key: password
+          - name: {{ .Values.deployments.web.pod.container.env.server }}
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-db-config
+                key: url
