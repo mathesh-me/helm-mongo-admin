@@ -1,5 +1,5 @@
 apiVersion: v2
-name: mondodb-admin-interface
+name: mongodb-admin-interface
 version: 0.1.0
 description: A Helm chart for MongoDB Admin Interface
 type: application
